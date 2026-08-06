@@ -1,25 +1,22 @@
 from multiprocessing import Process
 import time
 
-
-# Function to brew chai
 def brew_chai(name):
-    print(f"Start of {name} brewing")
-    time.sleep(2)
-    print(f"End of {name} brewing")
-
+    print(f"Start of {name} chai brewing")
+    time.sleep(3)
+    print(f"End of {name} chai brewing")
 
 if __name__ == "__main__":
     chai_makers = [
-        Process(target=brew_chai, args=(f"Chai Maker #{i + 1}",))
+        Process(target=brew_chai, args=(f"Chai Maker #{i+1}", ))
         for i in range(3)
     ]
 
-    # Start all processes
+    # Start all process
     for p in chai_makers:
         p.start()
 
-    # Wait for all processes to finish
+    # wait for all to complete
     for p in chai_makers:
         p.join()
 
