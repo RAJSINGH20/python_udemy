@@ -7,24 +7,30 @@ from openai import OpenAI
 load_dotenv()
 
 
-# Create OpenAI client
+# Create OpenRouter client
 client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
+    api_key=os.getenv("OPENROUTER_API_KEY"),
+    base_url="https://openrouter.ai/api/v1"
 )
 
+while True:
+    user = input("enter the string : \n")
+
+    # Send a request
+
+    if user == "STOP":
+        break
+    else:
+        response = client.chat.completions.create(
+            model="openai/gpt-4o-mini",
+            messages=[
+                {
+                    "role": "user",
+                    "content": user
+                }
+            ]
+        )
 
 
-# Send a chat completion request
-response = client.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[
-        {
-            "role": "user",
-            "content": "Hello, how are you?"
-        }
-    ]
-)
-
-
-# Print the AI response
-print(response.choices[0].message.content)
+# Print response
+    print(response.choices[0].message.content)
