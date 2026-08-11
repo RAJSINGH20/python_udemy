@@ -33,4 +33,4 @@ while True:
 
 
 # Print response
-    print(response.choices[0].message.content)
+print(response.choices[0].message.content)

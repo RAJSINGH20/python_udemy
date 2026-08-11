@@ -22,4 +22,3 @@ response = client.models.generate_content(
 
 # Print response
 print(response.text)
-print(response.sources)
