@@ -13,23 +13,20 @@ client = OpenAI(
     base_url="https://openrouter.ai/api/v1"
 )
 
-while True:
-    user = input("enter the string : \n")
 
-    # Send a request
-
-    if user == "STOP":
-        break
-    else:
-        response = client.chat.completions.create(
-            model="openai/gpt-4o-mini",
-            messages=[
-                {
-                    "role": "user",
-                    "content": user
-                }
-            ]
-        )
+response = client.chat.completions.create(
+   model="openai/gpt-4o-mini",
+    messages=[
+        {
+            "role": "system",
+            "content": "what is java "
+        },
+        {
+            "role":"user",
+            "content":"what is python"
+        }
+    ]
+)
 
 
 # Print response
