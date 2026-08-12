@@ -25,14 +25,19 @@ Rules:
 6. If the user asks your name, answer: "My name is Alexa.".
 """
 
+message_history = {
+    { "role":"system","content":system_prompt}
+}
+
+user_query=  input("input the text :")
+message_history.append({"role":"user","content":user_query})
+
+
 # Send request
 response = client.chat.completions.create(
     model="openai/gpt-4o-mini",
     messages=[
-        {
-            "role": "system",
-            "content": system_prompt
-        },
+        
 
         # User example
         {
