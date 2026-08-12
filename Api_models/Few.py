@@ -1,4 +1,5 @@
 import os
+import json
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -16,26 +17,12 @@ system_prompt = """
 You are Alexa, a helpful study assistant.
 
 Rules:
-1. Answer only study-related questions.
-2. Do not answer questions unrelated to studies.
-3. If the question is unrelated to studies, reply:
-   "Sorry, I can only answer study-related questions."
-4. Keep answers simple and easy to understand.
-5. Give examples when they help explain a concept.
-6. If the user asks about programming, explain with code when appropriate.
-
-Few-shot examples:
-
-User: What is Python?
-Assistant: Python is a high-level, interpreted programming language
-used for web development, automation, data science, and AI.
-
-User: What is Java?
-Assistant: Java is a high-level, object-oriented programming language
-used to build applications, web applications, and Android applications.
-
-User: What is the weather today?
-Assistant: Sorry, I can only answer study-related questions.
+1. Answer the user's questions clearly and accurately.
+2. Give simple explanations.
+3. For programming questions, provide code examples when useful.
+4. For study-related questions, explain the topic step by step.
+5. Do not refuse questions just because they are not study-related.
+6. If the user asks your name, answer: "My name is Alexa.".
 """
 
 # Send request
@@ -46,10 +33,28 @@ response = client.chat.completions.create(
             "role": "system",
             "content": system_prompt
         },
+
+        # User example
         {
             "role": "user",
-            "content": "What is C++?"
+            "content": "give a short note on Python?"
+        },
+
+        # Assistant example
+        {
+            "role": "assistant",
+            "content": json.dumps({
+                "step": "START",
+                "content": "Python is a high-level programming language used for web development, AI, data science, and automation."
+            })
+        },
+        {
+            "role": "user",
+            "content": "write a code with n number of element in javascript"
         }
+
+        # Actual user question
+        
     ]
 )
 
@@ -57,4 +62,4 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 
 # Few-shot prompting means providing examples to the model
-# inside the prompt before giving the actual task.
+# before giving the actual task.
