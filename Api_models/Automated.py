@@ -17,6 +17,7 @@ system_prompt = """
 You are Alexa, a helpful study assistant.
 
 Rules:
+
 1. Answer the user's questions clearly and accurately.
 2. Give simple explanations.
 3. For programming questions, provide code examples when useful.
@@ -24,16 +25,37 @@ Rules:
 5. Do not refuse questions just because they are not study-related.
 6. If the user asks your name, answer: "My name is Alexa."
 
-Always return valid JSON.
+You must ALWAYS return valid JSON.
 
-Use:
-START = understand the question
-PLAN = explain the approach
-OUTPUT = give the final answer
+Return ONLY one step at a time.
 
-After START or PLAN, you must eventually return OUTPUT.
+The JSON format MUST be:
+
+{
+    "step": "START",
+    "content": "your response"
+}
+
+The possible steps are:
+
+START = Understand the user's question.
+
+PLAN = Explain the approach or plan for answering.
+
+OUTPUT = Give the final answer.
+
+Rules for steps:
+
+- First return START.
+- Then return PLAN.
+- Finally return OUTPUT.
+- Never return START, PLAN, and OUTPUT together.
+- Always use exactly these keys:
+"step"
+"content"
 """
 
+# Message history
 message_history = [
     {
         "role": "system",
@@ -41,46 +63,79 @@ message_history = [
     }
 ]
 
-user_query = input("input the text: ")
+# Get user input
+user_query = input("Input the text: ")
 
 message_history.append({
     "role": "user",
     "content": user_query
 })
 
+# Automated process
 while True:
+
     response = client.chat.completions.create(
         model="openai/gpt-4o-mini",
         messages=message_history
     )
 
+    # Get model response
     raw_result = response.choices[0].message.content
 
+    print("\nRaw response:")
+    print(raw_result)
+
+    # Add assistant response to history
     message_history.append({
         "role": "assistant",
         "content": raw_result
-    })
+    }) 
 
-    Parsed_result = json.loads(raw_result)
-
-    if Parsed_result.get("step") == "START":
-        print(Parsed_result.get("content"))
-
-        message_history.append({
-            "role": "user",
-            "content": "Now proceed to the next step."
-        })
-        continue
-
-    if Parsed_result.get("step") == "PLAN":
-        print(Parsed_result.get("content"))
-
-        message_history.append({
-            "role": "user",
-            "content": "Now provide the final answer."
-        })
-        continue
-
-    if Parsed_result.get("step") == "OUTPUT":
-        print(Parsed_result.get("content"))
+    # Convert JSON string into Python dictionary
+    try:
+        parsed_result = json.loads(raw_result)
+    except json.JSONDecodeError:
+        print("Invalid JSON received from model.")
         break
+
+    # Get step
+    step = parsed_result.get("step")
+    content = parsed_result.get("content")
+
+    # START
+    if step == "START":
+
+        print("\nSTART:")
+        print(content)
+
+        message_history.append({
+            "role": "user",
+            "content": "Now proceed to the PLAN step."
+        })
+
+        continue
+
+    # PLAN
+    if step == "PLAN":
+
+        print("\nPLAN:")
+        print(content)
+
+        message_history.append({
+            "role": "user",
+            "content": "Now proceed to the OUTPUT step and give the final answer."
+        })
+
+        continue
+
+    # OUTPUT
+    if step == "OUTPUT":
+
+        print("\nOUTPUT:")
+        print(content)
+
+        break
+
+    # Unknown step
+    print("Unknown step received:", step)
+    break
