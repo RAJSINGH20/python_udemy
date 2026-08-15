@@ -2,6 +2,9 @@ import os
 import requests
 from dotenv import load_dotenv
 from openai import OpenAI
+from pydantic import BaseModel , fields
+from typing import Optional
+
 
 load_dotenv()
 
@@ -36,31 +39,52 @@ If weather information is unavailable, say that the weather service is temporari
 Keep your answer concise.
 """
 
+class MyOutput(BaseModel):
+    step: str = fields.Field(
+        ...,
+        description="The ID of the step, example: PLAN or OUTPUT"
+    )
 
-city = input("Enter city: ")
+    content: Optional[str] = fields.Field(
+        None,
+        description="The content of the step"
+    )
 
-weather = getweather(city)
+    TOOL: Optional[str] = fields.Field(
+        None,
+        description="The tool to use"
+    )
 
-print("\nWeather API Result:")
-print(weather)
+    INPUT: Optional[str] = fields.Field(
+        None,
+        description="The input to provide to the tool"
+    )
+    
+while True:
+    city = input("Enter city: ")
 
-response = client.chat.completions.create(
-    model="openai/gpt-4o-mini",
-    messages=[
-        {
-            "role": "system",
-            "content": system_prompt
-        },
-        {
-            "role": "user",
-            "content": f"Give me the current weather for {city}."
-        },
-        {
-            "role": "system",
-            "content": f"Weather API result: {weather}"
-        }
-    ]
-)
+    weather = getweather(city)
 
-print("\nAlexa:")
-print(response.choices[0].message.content)
+    print("\nWeather API Result:")
+    print(weather)
+
+    response = client.chat.completions.create(
+        model="openai/gpt-4o-mini",
+        messages=[
+            {
+                "role": "system",
+                "content": system_prompt
+            },
+            {
+                "role": "user",
+                "content": f"Give me the current weather for {city}."
+            },
+            {
+                "role": "system",
+                "content": f"Weather API result: {weather}"
+            }
+        ]
+    )
+
+    print("\nAlexa:")
+    print(response.choices[0].message.content)

@@ -1,0 +1,105 @@
+/* CSS Variables */
+:root {
+    --primary-color: #4A90E2;
+    --secondary-color: #50E3C2;
+    --background-color: #f7f9fc;
+    --text-color: #333;
+    --card-bg: rgba(255, 255, 255, 0.8);
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #6e7fd7, #b5e7e0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: var(--text-color);
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+todo-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+todo-card:hover {
+    transform: scale(1.05);
+}
+
+input[type='text'] {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    box-shadow: var(--shadow);
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 5px 0;
+}
+
+button:hover {
+    background-color: var(--secondary-color);
+}
+
+.task-list {
+    margin-top: 20px;
+    text-align: left;
+}
+
+.task {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 5px 0;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s;
+}
+
+.task.completed {
+    text-decoration: line-through;
+    background-color: #e0f7fa;
+}
+
+button.edit {
+    background-color: #FFA500;
+}
+
+button.delete {
+    background-color: red;
+}
+
+.empty-state {
+    margin-top: 20px;
+    color: #777;
+}
+
+@media (max-width: 600px) {
+    .todo-card {
+        width: 90%;
+    }
+}
