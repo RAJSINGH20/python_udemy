@@ -13,5 +13,4 @@ queue = Queue(connection=Redis(
     
 ))
 
-queue.enqueue_call(process_query)
 
