@@ -1,5 +1,5 @@
 services:
   vector-db:
-    image: valkey/valkey
+    image: qdrant/qdrant
     ports:
-      - "6379:6379"
+      - "6333:6333"
