@@ -20,36 +20,25 @@ embedding_model = OpenAIEmbeddings(
 )
 
 vector_db = QdrantVectorStore.from_existing_collection(
-    url="http://localhost:6333",
+    url="http://localhost:6333",   # correct Qdrant REST port
     collection_name="learning_rag",
     embedding=embedding_model
 )
 
 
 def process_query(query: str):
-
     print("\nSearching relevant documents...")
-
-    # Search Qdrant
-    search_result = vector_db.similarity_search(
-        query,
-        k=4
-    )
-
+    search_result = vector_db.similarity_search(query, k=4)
     print(f"Found {len(search_result)} relevant chunks")
 
-    # Build context
     context = "\n\n".join(
         [
             f"""
 --- Retrieved Chunk {i + 1} ---
-
 Page Content:
 {result.page_content}
-
 Page Number:
 {result.metadata.get("page_label", result.metadata.get("page", "Unknown"))}
-
 File:
 {result.metadata.get("source", "Unknown")}
 """
@@ -59,7 +48,6 @@ File:
 
     system_prompt = f"""
 You are a helpful AI assistant for answering questions from a PDF.
-
 Answer the user's question using ONLY the retrieved context.
 
 Format your answer exactly like this:
@@ -87,39 +75,27 @@ Retrieved Context:
 {context}
 """
 
-    # Ask LLM
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
-            {
-                "role": "system",
-                "content": system_prompt
-            },
-            {
-                "role": "user",
-                "content": query
-            }
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": query}
         ]
     )
 
-    # Extract AI answer
     answer = response.choices[0].message.content
 
-    # Display nicely
     print("\n" + "=" * 60)
     print("AI RESPONSE")
     print("=" * 60)
-
     print(answer)
 
     print("\n" + "=" * 60)
     print("RETRIEVED CHUNKS")
     print("=" * 60)
-
     for i, result in enumerate(search_result, 1):
         print(f"\n--- Chunk {i} ---")
         print(f"Page: {result.metadata.get('page_label', 'Unknown')}")
         print(f"Source: {result.metadata.get('source', 'Unknown')}")
         print(f"\n{result.page_content[:500]}...")
-
     print("=" * 60)
