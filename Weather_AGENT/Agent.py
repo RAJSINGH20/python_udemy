@@ -39,6 +39,9 @@ If weather information is unavailable, say that the weather service is temporari
 Keep your answer concise.
 """
 
+
+
+
 class MyOutput(BaseModel):
     step: str = fields.Field(
         ...,
