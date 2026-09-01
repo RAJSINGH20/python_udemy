@@ -3,7 +3,7 @@ import requests
 from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel , fields
-from typing import Optional
+from typing import Optio    nal
 
 
 load_dotenv()
