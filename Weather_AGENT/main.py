@@ -7,8 +7,8 @@ import requests
 load_dotenv()
 
 client = OpenAI(
-    api_key=os.getenv("OPENROUTER_API_KEY"),
-    base_url="https://openrouter.ai/api/v1"
+    api_key=os.getenv("GPT"),
+    # base_url="https://openrouter.ai/api/v1"
 )
 
 # def getwheather(city:str):
@@ -25,7 +25,7 @@ def main():
     user_query = input("> ")
 
     response = client.chat.completions.create(
-        model="openai/gpt-4o-mini",
+        model="gpt-3.5-turbo-16k-0613",
         messages=[
             {
                 "role": "user",
