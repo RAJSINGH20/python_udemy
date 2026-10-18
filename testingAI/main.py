@@ -1,9 +1,8 @@
 import json
+from urllib.error import URLError
 from urllib.request import Request, urlopen
 
-userinput = input("enter the Query :")
-
-systemprompt = """
+SYSTEM_PROMPT = """
 # ULTIMATE AI PERSONAL ASSISTANT — SYSTEM PROMPT
 
 ## 1. Identity and Mission
@@ -179,22 +178,50 @@ Understand what I need, provide the best available answer, and complete as much 
 
 Your priorities are accuracy, usefulness, speed, transparency, privacy, and helping me become more capable and successful.
 
-**Start by understanding my request. Then deliver the most useful answer or completed result possible.** """
+**Start by understanding my request. Then deliver the most useful answer or completed result possible.**
+"""
 
 
-request = Request(
-	"http://localhost:11434/api/chat",
-	data=json.dumps({
-		"model": "deepseek-r1:1.5b ",
-		"messages":[{"role": "system", "content": systemprompt}],
-		"messages": [{"role": "user", "content": userinput}],
-		"stream": False,
-	}).encode("utf-8"),
-	headers={"Content-Type": "application/json"},
-	method="POST",
-)
+def build_payload(user_input: str, system_prompt: str = SYSTEM_PROMPT) -> dict:
+    return {
+        "model": "deepseek-r1:1.5b",
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_input},
+        ],
+        "stream": False,
+    }
 
-with urlopen(request) as response:
-	result = json.load(response)
 
-print(result["message"]["content"])
+def ask_local_ai(user_input: str, system_prompt: str = SYSTEM_PROMPT) -> str:
+    payload = build_payload(user_input, system_prompt)
+    request = Request(
+        "http://localhost:11434/api/chat",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+
+    with urlopen(request) as response:
+        result = json.load(response)
+
+    return result["message"]["content"]
+
+
+def main() -> None:
+    user_input = input("enter the Query :").strip()
+    if not user_input:
+        raise SystemExit("Query cannot be empty.")
+
+    try:
+        response = ask_local_ai(user_input)
+    except (URLError, OSError, ValueError) as exc:
+        print(f"Unable to connect to the local Ollama server: {exc}")
+        print("Make sure Ollama is running with: http://localhost:11434")
+        raise SystemExit(1) from exc
+
+    print(response)
+
+
+if __name__ == "__main__":
+    main()
